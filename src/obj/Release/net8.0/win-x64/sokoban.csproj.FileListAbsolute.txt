@@ -1,0 +1,17 @@
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\build\bin\net8.0\win-x64\sokoban.exe
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\build\bin\net8.0\win-x64\sokoban.deps.json
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\build\bin\net8.0\win-x64\sokoban.runtimeconfig.json
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\build\bin\net8.0\win-x64\sokoban.dll
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\build\bin\net8.0\win-x64\sokoban.pdb
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.csproj.AssemblyReference.cache
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.AssemblyInfoInputs.cache
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.AssemblyInfo.cs
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.csproj.CoreCompileInputs.cache
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.sourcelink.json
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.csproj.Up2Date
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.dll
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\refint\sokoban.dll
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.pdb
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\sokoban.genruntimeconfig.cache
+C:\Users\redsa\Desktop\MAIN\sokoban-del-Real\src\obj\Release\net8.0\win-x64\ref\sokoban.dll

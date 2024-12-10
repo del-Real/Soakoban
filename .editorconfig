@@ -1,0 +1,20 @@
+# Top-most EditorConfig file
+root = true
+
+# # Default settings for all files
+# [*]
+# charset = utf-8
+# end_of_line = lf
+# indent_style = space
+# indent_size = 4
+# trim_trailing_whitespace = true
+# insert_final_newline = true
+
+# Settings specifically for C# files
+[*.cs]
+# Use spaces for indentation in C#
+indent_style = space
+indent_size = 4
+
+# Place curly braces on the same line
+csharp_new_line_before_open_brace = none
