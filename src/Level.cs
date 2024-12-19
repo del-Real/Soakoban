@@ -1,10 +1,3 @@
-/*********************************************************************
-* Class Name: Level
-* Author/s name: Alberto del Real
-* Class description: Stores and calculates inmutable level objects and 
-* calculates the number of rows and columns
-*********************************************************************/
-
 namespace Sokoban;
 
 public class Level {
@@ -28,42 +21,12 @@ public class Level {
     public int[][] Walls => walls;              // Getter walls
     public int[][] Targets => targets;          // Getter targets
 
-    /*********************************************************************
-     * Method name: RowsCount
-     *
-     * Description of the Method: Counts the number of rows
-     *
-     * Calling arguments: string level
-     *
-     * Return value: int, returns the number of rows
-     *
-     * Required Files: Does not make use of any external files
-     *
-     * List of Checked Exceptions and an indication of when each exception
-     * is thrown: None
-     *
-     *********************************************************************/
-
+    // Counts the number of rows
     private int RowsCount(string level) {
         return level.Split('\n').Length;
     }
 
-    /*********************************************************************
-    * Method name: ColsCount
-    *
-    * Description of the Method: Counts the number of columns
-    *
-    * Calling arguments: string level
-    *
-    * Return value: int, returns the number of columns
-    *
-    * Required Files: Does not make use of any external files
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown: None
-    *
-    *********************************************************************/
-
+    // Counts the number of columns
     private int ColsCount(string level) {
 
         int count = 0, maxCols = 0;
@@ -82,22 +45,7 @@ public class Level {
         return maxCols;
     }
 
-    /*********************************************************************
-    * Method name: ObtainWallsCoords
-    *
-    * Description of the Method: Determines the coordinates of walls
-    *
-    * Calling arguments: string level
-    *
-    * Return value: int[][], returns wall coordinates array
-    *
-    * Required Files: Does not make use of any external files
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown: None
-    *
-    *********************************************************************/
-
+    // Returns the coordinates of walls
     private int[][] ObtainWallsCoords(string level) {
 
         int i = 0, j = 0;
@@ -122,22 +70,7 @@ public class Level {
         return walls;
     }
 
-    /*********************************************************************
-    * Method name: ObtainTargetsCoords
-    *
-    * Description of the Method: Determines the coordinates of targets
-    *
-    * Calling arguments: string level
-    *
-    * Return value: int[][], returns target coordinates array
-    *
-    * Required Files: Does not make use of any external files
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown: None
-    *
-    *********************************************************************/
-
+    // Returns the coordinates of targets
     private int[][] ObtainTargetsCoords(string level) {
 
         int i = 0, j = 0;

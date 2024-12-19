@@ -126,19 +126,19 @@
     ]
   },
   "packageFolders": {
-    "/home/redsantar/.nuget/packages/": {}
+    "/Users/redsantar/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/redsantar/Downloads/sokoban-del-Real-tarea4/src/sokoban.csproj",
+      "projectUniqueName": "/Users/redsantar/MAIN/Suckabunch/src/sokoban.csproj",
       "projectName": "sokoban",
-      "projectPath": "/home/redsantar/Downloads/sokoban-del-Real-tarea4/src/sokoban.csproj",
-      "packagesPath": "/home/redsantar/.nuget/packages/",
-      "outputPath": "/home/redsantar/Downloads/sokoban-del-Real-tarea4/src/obj/",
+      "projectPath": "/Users/redsantar/MAIN/Suckabunch/src/sokoban.csproj",
+      "packagesPath": "/Users/redsantar/.nuget/packages/",
+      "outputPath": "/Users/redsantar/MAIN/Suckabunch/src/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/redsantar/.nuget/NuGet/NuGet.Config"
+        "/Users/redsantar/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -188,7 +188,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/snap/dotnet-sdk/254/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -31,12 +31,12 @@ public class Param {
     }
 
     // Properties
-    public string Task => task;                 // Getter task
-    public string FirstFlag => firstFlag;       // Getter firstFlag
-    public string Level => level;               // Getter level
-    public string? SecondFlag => secondFlag;    // Getter secondFlag
-    public string? Strategy => strategy;        // Getter strategy
-    public string? ThirdFlag => thirdFlag;      // Getter thirdFlag
-    public string? Depth => depth;              // Getter depth
-    public string? RenderFlag => renderFlag;    // Getter renderFlag
+    public string Task => task;                 // Task Getter
+    public string FirstFlag => firstFlag;       // FirstFlag Getter
+    public string Level => level;               // Level Getter
+    public string? SecondFlag => secondFlag;    // SecondFlag Getter
+    public string? Strategy => strategy;        // Strategy Getter
+    public string? ThirdFlag => thirdFlag;      // ThirdFlag Getter
+    public string? Depth => depth;              // Depth Getter
+    public string? RenderFlag => renderFlag;    // RenderFlag Getter
 }

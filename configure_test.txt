@@ -1,2 +1,0 @@
-C#
-build/bin/net8.0/

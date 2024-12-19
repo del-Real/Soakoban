@@ -1,4 +1,5 @@
 namespace Sokoban;
+
 public class Node {
 
     private int idNode;
@@ -70,23 +71,7 @@ public class Node {
         set => valueNode = value;
     }
 
-    /*********************************************************************
-     * Method name: AssignValue
-     *
-     * Description of the Method: Assign value to the value depending on
-     * the entered strategy
-     *
-     * Calling arguments: string strategy, Level level
-     *
-     * Return value: void, does not return any values
-     *
-     * Required Files: Does not make use of any external files
-     *
-     * List of Checked Exceptions and an indication of when each exception
-     * is thrown: None
-     *
-     *********************************************************************/
-
+    // Assign value to the value depending on the entered strategy
     public void AssignValue(string strategy, Level level) {
         switch (strategy) {
             case "BFS":
@@ -109,23 +94,7 @@ public class Node {
         }
     }
 
-    /*********************************************************************
-     * Method name: HeuristicManhattan
-     *
-     * Description of the Method: Calculate the Manhattan distance between 
-     * a box and a target
-     *
-     * Calling arguments: Level level, State state
-     *
-     * Return value: int, returns the minimum distance
-     *
-     * Required Files: Does not make use of any external files
-     *
-     * List of Checked Exceptions and an indication of when each exception
-     * is thrown: None
-     *
-     *********************************************************************/
-
+    // Calculate the Manhattan distance between a box and a target
     public int HeuristicManhattan(Level level, State state) {
         int[][] boxes = state.Boxes;
         int[][] targets = level.Targets;
@@ -168,23 +137,7 @@ public class Node {
         return totalMin;
     }
 
-    /*********************************************************************
-     * Method name: PrintNode
-     *
-     * Description of the Method: Concatenate every variable of a node into
-     * a string and prints it
-     *
-     * Calling arguments: None
-     *
-     * Return value: void, does not return any values
-     *
-     * Required Files: Does not make use of any external files
-     *
-     * List of Checked Exceptions and an indication of when each exception
-     * is thrown: None
-     *
-     *********************************************************************/
-
+    // Concatenate every variable of a node into a string and prints it
     public void PrintNode() {
         float roundedValueNode = (float)Math.Round(valueNode, 2, MidpointRounding.AwayFromZero);
 

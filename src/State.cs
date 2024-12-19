@@ -1,9 +1,3 @@
-/*********************************************************************
-* Class Name: State
-* Author/s name: Alberto del Real
-* Class description: Stores and calculates mutable objects coordinates
-*********************************************************************/
-
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -48,23 +42,7 @@ public class State {
         set => id = value;
     }
 
-    /*********************************************************************
-    * Method name: ObtainPlayerCoords
-    *
-    * Description of the Method: Determines the coordinates of player
-    *
-    * Calling arguments: string level
-    *   
-    * Return value: (int, int), returns player position tuple
-    *
-    * Required Files: Does not make use of any external files
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown: Checks if there is more than one player and if there is 
-    * not a player in the level
-    *
-    *********************************************************************/
-
+    // Determines the coordinates of player
     private (int, int) ObtainPlayerCoords(string level) {
 
         int playerCount = 0;
@@ -104,23 +82,7 @@ public class State {
         player = (x, y);  // Set the player to the new position
     }
 
-    /*********************************************************************
-    * Method name: ObtainBoxesCoords
-    *
-    * Description of the Method: Determines the coordinates of boxes that
-    * are already on target
-    *
-    * Calling arguments: string level
-    *
-    * Return value: int[][], returns the boxes on target coordinates array.
-    *
-    * Required Files: Does not make use of any external files
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown: None
-    *
-    *********************************************************************/
-
+    // Determines the coordinates of boxes that are already on target
     private int[][] ObtainBoxesCoords(string level) {
 
         int i = 0, j = 0;
@@ -147,24 +109,7 @@ public class State {
         return boxes;
     }
 
-
-    /*********************************************************************
-    * Method name: GetMD5Hash
-    *
-    * Description of the Method: Generates a MD5 hash based on the player 
-    * and box position
-    *
-    * Calling arguments: (int, int) player, int[][] boxes
-    *
-    * Return value: string, returns the MD5 hash
-    *
-    * Required Files: Does not make use of any external files
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown: None
-    *
-    *********************************************************************/
-
+    // Generates a MD5 hash based on the player and box position
     public string CalculateMD5Hash((int, int) player, int[][] boxes) {
 
         string input = $"({player.Item1},{player.Item2})[";

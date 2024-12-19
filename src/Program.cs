@@ -1,11 +1,4 @@
-﻿/*********************************************************************
-* Class Name: Program
-* Author/s name: Alberto del Real
-* Class description: main entry point for Sokoban game solver with
-* graphical visualization of the level using Raylib.
-*********************************************************************/
-
-using System;
+﻿using System;
 using Raylib_cs;
 using System.Data;
 using System.Security;
@@ -177,23 +170,7 @@ class Program {
         }
     } // End Main
 
-    /*********************************************************************
-    * Method name: ProblemDomain
-    *
-    * Description of the Method: prints ID, rows, columns, walls, targets, 
-    * player and boxes positions in the level.
-    *
-    * Calling arguments: Level level, State state
-    *
-    * Return value: void, does not return any values.
-    *
-    * Required Files: Does not make use of any external files
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown: None
-    *
-    *********************************************************************/
-
+    // Prints ID, rows, columns, walls, targets, player and boxes positions in the level
     static void ProblemDomain(Level level, State state) {
 
         Console.WriteLine("\nID: " + state.Id);
@@ -208,23 +185,7 @@ class Program {
         PrintCoordsArray(state.Boxes);
     }
 
-    /*********************************************************************
-      * Method name: SuccessorFunction
-      *
-      * Description of the Method: returns the list of successors, which are
-      * all the possible moves that the player can make in a given state.
-      *
-      * Calling arguments: Level level, State state
-      *
-      * Return value: List of successors, each succesor is (char, string, int)
-      *
-      * Required Files: Does not make use of any external files
-      *
-      * List of Checked Exceptions and an indication of when each exception
-      * is thrown: None
-      *
-      *********************************************************************/
-
+    // Returns the list of successors, which are all the possible moves that the player can make in a given state
     static List<Successor> SuccessorFunction(Level level, State state) {
 
         List<Successor> successors = new List<Successor>();
@@ -356,29 +317,11 @@ class Program {
         return successors;
     }
 
-    /*********************************************************************
-      * Method name: ObjectiveFunction
-      *
-      * Description of the Method: returns if the objective function (all
-      * boxes are on targets) is achieved.
-      *
-      * Calling arguments: Level level, State state
-      *
-      * Return value: boolean, returns true if the objective function is
-      * achieved or false if not.
-      *
-      * Required Files: Does not make use of any external files
-      *
-      * List of Checked Exceptions and an indication of when each exception
-      * is thrown: None
-      *
-      *********************************************************************/
-
+    // Returns if the objective function (all boxes are on targets) is achieved.
     static bool ObjectiveFunction(Level level, State state) {
 
         HashSet<(int, int)> boxesSet = new HashSet<(int, int)>();
         HashSet<(int, int)> targetsSet = new HashSet<(int, int)>();
-
 
         foreach (var box in state.Boxes) {
             boxesSet.Add((box[0], box[1]));
@@ -397,24 +340,7 @@ class Program {
         return allBoxesOnTarget;
     }
 
-    /*********************************************************************
-    * Method name: SearchAlgorithm
-    *
-    * Description of the Method: returns the list of nodes from the root
-    * node to the objective node
-    *
-    * Calling arguments: Level level, State state, string depth, string
-    * strategy
-    *
-    * Return value: int, returns the number of rows
-    *
-    * Required Files: Does not make use of any external files
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown: None
-    *
-    *********************************************************************/
-
+    // Returns the list of nodes from the root
     static List<Node> SearchAlgorithm(Level level, State state, string depth, string strategy) {
 
         var comparator = Comparer<Node>.Create((x, y) => {
@@ -482,23 +408,7 @@ class Program {
         }
     }
 
-    /*********************************************************************
-    * Method name: PrintCoordsArray
-    *
-    * Description of the Method: Prints a jagged array for debugging 
-    * purposes
-    *
-    * Calling arguments: int[][] array
-    *
-    * Return value: void, does not return any values.
-    *
-    * Required Files: Does not make use of any external files
-    *
-    * List of Checked Exceptions and an indication of when each exception
-    * is thrown: None
-    *
-    *********************************************************************/
-
+    // Prints a jagged array for debugging purposes
     static void PrintCoordsArray(int[][] array) {
         Console.Write("[");
 
