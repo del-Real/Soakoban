@@ -8,163 +8,81 @@ namespace Sokoban;
 class Program {
     public static void Main(string[] args) {
 
-        // Check if there are arguments
+        // Check if there are not arguments (True = run GUI / False = parse arguments)
         if (args.Length == 0) {
-            Console.WriteLine("Usage: ./sokoban.exe <action> <parameters>");
-            throw new ArgumentException("No arguments provided");
+
         }
+        else {
 
-        // Check if second parameter has a dash
-        if (args[1][0] != '-') {
-            Console.WriteLine("Dash is required for parameter: -<parameter>");
-            throw new ArgumentException("Second parameter must start with a dash.");
-        }
-
-        Param param = new Param(args);
-
-        // Valid characters defined
-        HashSet<char> validCharacters = new HashSet<char> { '#', '@', '$', '.', '*', '+', ' ', '\n' };
-
-        // Check if all characters in the level string are valid
-        foreach (char c in param.Level) {
-            if (!validCharacters.Contains(c)) {
-                throw new InvalidOperationException("Character not valid: " + c);
+            if (args.Length > 0 && args.Length < 3) {
+                Console.WriteLine("\nUsage: ./sokoban.exe '<level>' <strategy> <depth>\n");
+                throw new ArgumentException("Required arguments not found.");
             }
-        }
 
-        Level level = new Level(param.Level);
-        State state = new State(param.Level);
-        bool renderActive = false;
+            Param param = new Param(args);
 
-        // Check if there is a different number of boxes and targets
-        if (state.Boxes.Length > level.Targets.Length) {
-            throw new InvalidOperationException("The level must have at least as many targets as boxes");
-        }
+            // Valid characters defined
+            HashSet<char> validCharacters = new HashSet<char> { '#', '@', '$', '.', '*', '+', ' ', '\n' };
 
-        // Check if there are not at least one box and one target
-        if (state.Boxes.Length == 0 || level.Targets.Length == 0) {
-            throw new InvalidOperationException("The level must have at least one box and one target");
-        }
-
-        switch (param.Task) {
-            case "T1":
-                ProblemDomain(level, state);
-                break;
-
-            case "T2S":
-                List<Successor> successors = SuccessorFunction(level, state);
-                Console.WriteLine("ID: " + state.Id);
-                foreach (var successor in successors) {
-                    successor.PrintSuccessor();
+            // Check if all characters in the level string are valid
+            foreach (char c in param.Level) {
+                if (!validCharacters.Contains(c)) {
+                    throw new InvalidOperationException("Character not valid: " + c);
                 }
-                break;
-            case "T2T":
-                bool allBoxesOnTarget = ObjectiveFunction(level, state);
-                Console.Write(allBoxesOnTarget.ToString().ToUpper() + "\n");
-                break;
+            }
 
-            case "T3":
-                Console.Write(args[2] + '\n');
-                List<Node> solutionPath = SearchAlgorithm(level, state, param.Depth, param.Strategy);
-                foreach (var nodeSolution in solutionPath) {
-                    nodeSolution.PrintNode();
+            Level level = new Level(param.Level);
+            State state = new State(param.Level);
+
+            // Check if there is a different number of boxes and targets
+            if (state.Boxes.Length > level.Targets.Length) {
+                throw new InvalidOperationException("The level must have at least as many targets as boxes");
+            }
+
+            // Check if there are not at least one box and one target
+            if (state.Boxes.Length == 0 || level.Targets.Length == 0) {
+                throw new InvalidOperationException("The level must have at least one box and one target");
+            }
+
+            List<Node> solutionPath = SearchAlgorithm(level, state, param.Depth, param.Strategy);
+
+            // foreach (var nodeSolution in solutionPath) {
+            //     nodeSolution.PrintNode();
+            // }
+
+            HashSet<string> validStrategies = new HashSet<string> { "BFS", "DFS", "UC", "GREEDY", "A*" };
+
+            if (!validStrategies.Contains(param.Strategy)) {
+                Console.WriteLine("\nValid strategies: BFS / DFS / UC / GREEDY / A*\n");
+                throw new ArgumentException("Invalid strategy.");
+            }
+
+            // Parse strategy (optional)
+            if (param.Strategy != null) {
+                switch (param.Strategy) {
+                    case "BFS":
+                        break;
+
+                    case "DFS":
+                        break;
+
+                    case "UC":
+                        break;
+
+                    case "GREEDY":
+                        break;
+
+                    case "A*":
+                        break;
+
+                    default:
+                        Console.WriteLine("Unknown parameter: " + param.Strategy);
+                        break;
                 }
-                break;
-
-            default:
-                Console.WriteLine("Unknown action: " + param.Task);
-                break;
-        }
-
-        // Parse first flag (level flag)
-        switch (param.FirstFlag) {
-            case "-l":
-            case "-level":
-                // Check if level argument is passed
-                if (args.Length < 3) {
-                    Console.WriteLine("-l usage: ./sokoban.exe <action> <parameters> '<level>'");
-                    break;
-                }
-                //Console.WriteLine(level);   // print level
-                break;
-
-            default:
-                Console.WriteLine("Unknown parameter: " + param.FirstFlag);
-                break;
-        }
-
-        // Parse second flag (optional)
-        if (param.SecondFlag != null) {
-            switch (param.SecondFlag) {
-                case "-s":
-                    // Handle -s flag
-                    break;
-                case "-r":
-                    renderActive = true;
-                    break;
-
-                default:
-                    Console.WriteLine("Unknown parameter: " + param.SecondFlag);
-                    break;
             }
-        }
 
-        // Parse strategy (optional)
-        if (param.Strategy != null) {
-            switch (param.Strategy) {
-                case "BFS":
-                    // Handle BFS strategy
-                    break;
+            ProblemDomain(level, state);
 
-                case "DFS":
-                    // Handle DFS strategy
-                    break;
-
-                case "UC":
-                    // Handle UC strategy
-                    break;
-
-                case "GREEDY":
-                    break;
-
-                case "A*":
-                    break;
-
-                default:
-                    Console.WriteLine("Unknown parameter: " + param.Strategy);
-                    break;
-            }
-        }
-
-        // Parse third flag (optional)
-        if (param.ThirdFlag != null) {
-            switch (param.ThirdFlag) {
-                case "-d":
-                    // Handle -d flag
-                    break;
-
-                default:
-                    Console.WriteLine("Unknown parameter: " + param.ThirdFlag);
-                    break;
-            }
-        }
-
-        // Parse render flag (optional)
-        if (param.RenderFlag != null) {
-            switch (param.RenderFlag) {
-                case "-r":
-                    renderActive = true;
-                    break;
-
-                default:
-                    Console.WriteLine("Unknown parameter: " + param.ThirdFlag);
-                    break;
-            }
-        }
-
-
-        // Render level graphics
-        if (renderActive && !string.IsNullOrEmpty(param.Task) && !string.IsNullOrEmpty(param.Level)) {
             Renderer renderer = new Renderer(level, state);
             renderer.Render();
         }

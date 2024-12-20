@@ -36,9 +36,9 @@ public class Renderer {
     // Initializes the game window, sets up the frame rate, and loads the necessary textures for the game elements
     private void Initialize() {
 
-        Raylib.SetTraceLogLevel(TraceLogLevel.None);                // disable Raylib log info
-        Raylib.InitWindow(screenWidth, screenHeight, "Sokoban");    // window initilizer
-        Raylib.SetTargetFPS(5);                                     // set frame rate
+        Raylib.SetTraceLogLevel(TraceLogLevel.None);                 // disable Raylib log info
+        Raylib.InitWindow(screenWidth, screenHeight, "Suckabunch");  // window initilizer
+        Raylib.SetTargetFPS(30);                                     // set frame rate
 
         playerTexture = Raylib.LoadTexture("resources/player.png");   // load player texture
         wallTexture = Raylib.LoadTexture("resources/wall.png");       // load wall texture
