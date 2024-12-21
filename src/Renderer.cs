@@ -1,6 +1,7 @@
 using System;
 using Raylib_cs;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Sokoban;
 
@@ -72,8 +73,8 @@ public class Renderer {
         (float, float) playerMove = (0f, 0f);
 
         // Boxes movement
-        (float, float) startBoxPos = (0f, 0f);
-        (float, float) endBoxrPos = (0f, 0f);
+        (float, float) startBoxesPos = (0f, 0f);
+        (float, float) endBoxesPos = (0f, 0f);
         (float, float) boxMove = (0f, 0f);
 
         int currentNodeIndex = 0;
@@ -84,11 +85,15 @@ public class Renderer {
 
             // Lerp
             if (currentNodeIndex < nodeSolution.Count - 1) {
+
                 // Set start and end positions for the current node transition
                 startPlayerPos = (nodeSolution[currentNodeIndex].StateNode.Player.Item1,
                                   nodeSolution[currentNodeIndex].StateNode.Player.Item2);
                 endPlayerPos = (nodeSolution[currentNodeIndex + 1].StateNode.Player.Item1,
                                 nodeSolution[currentNodeIndex + 1].StateNode.Player.Item2);
+
+                startBoxesPos = nodeSolution[currentNodeIndex].StateNode.Boxes;
+                endBoxesPos = nodeSolution[currentNodeIndex + 1].StateNode.Boxes;
 
                 // Update interpolation progress
                 if (timeElapsed < duration) {
@@ -102,6 +107,8 @@ public class Renderer {
                     timeElapsed = 0.0f; // Reset elapsed time for the next transition
                     currentNodeIndex++;
                 }
+
+
             }
 
             // Drawing
@@ -125,6 +132,20 @@ public class Renderer {
         float x = startPos.Item1 + (endPos.Item1 - startPos.Item1) * amount;
         float y = startPos.Item2 + (endPos.Item2 - startPos.Item2) * amount;
         return (x, y);
+    }
+
+    static void PrintCoordsArray(int[][] array) {
+        Console.Write("[");
+
+        for (int i = 0; i < array.Length; i++) {
+            Console.Write("(" + array[i][0] + "," + array[i][1] + ")");
+
+            if (i < array.Length - 1) {
+                Console.Write(",");
+            }
+        }
+
+        Console.WriteLine("]");
     }
 
     /*

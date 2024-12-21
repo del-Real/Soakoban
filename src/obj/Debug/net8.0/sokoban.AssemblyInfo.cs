@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("sokoban")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4530860c4c5f5078f9c1f48c933400324651fbfa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+73a8be9476ca0c23088f4e5bc170c4d4a01fe3b5")]
 [assembly: System.Reflection.AssemblyProductAttribute("sokoban")]
 [assembly: System.Reflection.AssemblyTitleAttribute("sokoban")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
