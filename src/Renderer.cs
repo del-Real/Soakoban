@@ -19,6 +19,19 @@ public class Renderer {
     private Level level;
     private State state;
 
+    /*
+
+        // Renderer constructor
+        public Renderer() {
+            screenWidth = 1280;     // screen width set by tile size
+            screenHeight = 720;    // screen height set by tile size
+            offset = TILE_SIZE * 2;                                 // offset to add margins
+
+            LaunchMenu();
+        }
+
+    */
+
     // Renderer constructor
     public Renderer(Level level, State state) {
         this.level = level;
@@ -38,7 +51,7 @@ public class Renderer {
 
         Raylib.SetTraceLogLevel(TraceLogLevel.None);                 // disable Raylib log info
         Raylib.InitWindow(screenWidth, screenHeight, "Suckabunch");  // window initilizer
-        Raylib.SetTargetFPS(30);                                     // set frame rate
+        Raylib.SetTargetFPS(60);                                     // set frame rate
 
         playerTexture = Raylib.LoadTexture("resources/player.png");   // load player texture
         wallTexture = Raylib.LoadTexture("resources/wall.png");       // load wall texture
@@ -46,21 +59,57 @@ public class Renderer {
         targetTexture = Raylib.LoadTexture("resources/target.png");   // load target texture
     }
 
+
     // Manages the game loop, including drawing the game elements on the screen and handling window events
-    public void Render() {
+    public void Render(List<Node> nodeSolution) {
         Initialize();
 
-        Color lightWhite = new Color(255, 255, 255, 32); // Set grid color
+        float duration = 0.6f;    // Duration for each movement
+        float timeElapsed = 0.0f; // Tracks time for interpolation
 
+        // Player movement
+        (int, int) startPlayerPos = (0, 0);
+        (int, int) endPlayerPos = (0, 0);
+        (int, int) playerMove = (0, 0);
+
+        // Box movement
+
+
+        int currentNodeIndex = 0;
+
+        // Render loop
         while (!Raylib.WindowShouldClose()) {
+            float dt = Raylib.GetFrameTime(); // Delta time
+
+            // Process movement if there are nodes left
+            if (currentNodeIndex < nodeSolution.Count - 1) {
+                // Set start and end positions for the current node transition
+                startPlayerPos = nodeSolution[currentNodeIndex].StateNode.Player;
+                endPlayerPos = nodeSolution[currentNodeIndex + 1].StateNode.Player;
+
+                // Update interpolation progress
+                if (timeElapsed < duration) {
+                    float t = timeElapsed / duration; // Normalized time
+                    playerMove = Lerp(startPlayerPos, endPlayerPos, t);
+                    timeElapsed += dt;
+                }
+                else {
+                    // Move to the next node
+                    playerMove = endPlayerPos;
+                    timeElapsed = 0.0f; // Reset elapsed time for the next transition
+                    currentNodeIndex++;
+                }
+            }
+
+            // Drawing
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.Black);
 
-            DrawGrid(lightWhite);
-            DrawPlayer();
-            DrawWalls();
+            DrawGrid();
+            DrawPlayer(playerMove); // Draw the interpolated player position
             DrawBoxes();
             DrawTargets();
+            DrawWalls();
 
             Raylib.EndDrawing();
         }
@@ -68,32 +117,54 @@ public class Renderer {
         Cleanup();
     }
 
+    // Lerp from start to end
+    private static (int, int) Lerp((int, int) startPos, (int, int) endPos, float amount) {
+        int x = (int)(startPos.Item1 + (endPos.Item1 - startPos.Item1) * amount);
+        int y = (int)(startPos.Item2 + (endPos.Item2 - startPos.Item2) * amount);
+        return (x, y);
+    }
+
+    /*
+        public void LaunchMenu() {
+            Initialize();
+
+            Color lightWhite = new Color(255, 255, 255, 32); // Set grid color
+
+            while (!Raylib.WindowShouldClose()) {
+
+                float deltaTime = Raylib.GetFrameTime();
+
+                Raylib.BeginDrawing();
+                Raylib.ClearBackground(Color.Black);
+
+                Raylib.EndDrawing();
+            }
+
+            Cleanup();
+        }
+    */
+
     // Draws a grid on the screen to represent the game board, using a specified color
-    private void DrawGrid(Color color) {
+    private void DrawGrid() {
+
+        Color lightWhite = new Color(255, 255, 255, 32);
+
         // Draw vertical grid lines
         for (int i = 0; i < screenWidth / TILE_SIZE + 1; i++) {
-            Raylib.DrawLineV(new Vector2(TILE_SIZE * i, 0), new Vector2(TILE_SIZE * i, screenHeight), color);
+            Raylib.DrawLineV(new Vector2(TILE_SIZE * i, 0), new Vector2(TILE_SIZE * i, screenHeight), lightWhite);
         }
 
         // Draw horizontal grid lines
         for (int i = 0; i < screenHeight / TILE_SIZE + 1; i++) {
-            Raylib.DrawLineV(new Vector2(0, TILE_SIZE * i), new Vector2(screenWidth, TILE_SIZE * i), color);
+            Raylib.DrawLineV(new Vector2(0, TILE_SIZE * i), new Vector2(screenWidth, TILE_SIZE * i), lightWhite);
         }
     }
 
     // Draws the player on the game board based on the player's current position
-    private void DrawPlayer() {
-        (int x, int y) player = state.Player;
-        Raylib.DrawTexture(playerTexture, player.Item2 * TILE_SIZE + offset, player.Item1 * TILE_SIZE + offset, Color.White);
-    }
+    private void DrawPlayer((int, int) playerCoords) {
 
-    // Draws the walls of the game board at the specified positions
-    private void DrawWalls() {
-        foreach (var wall in level.Walls) {
-            int x = wall[1];
-            int y = wall[0];
-            Raylib.DrawTexture(wallTexture, x * TILE_SIZE + offset, y * TILE_SIZE + offset, Color.White);
-        }
+        Raylib.DrawTexture(playerTexture, playerCoords.Item2 * TILE_SIZE + offset, playerCoords.Item1 * TILE_SIZE + offset, Color.White);
+
     }
 
     // Draws the boxes on the game board based on their current positions
@@ -111,6 +182,15 @@ public class Renderer {
             int x = target[1];
             int y = target[0];
             Raylib.DrawTexture(targetTexture, x * TILE_SIZE + offset, y * TILE_SIZE + offset, Color.White);
+        }
+    }
+
+    // Draws the walls of the game board at the specified positions
+    private void DrawWalls() {
+        foreach (var wall in level.Walls) {
+            int x = wall[1];
+            int y = wall[0];
+            Raylib.DrawTexture(wallTexture, x * TILE_SIZE + offset, y * TILE_SIZE + offset, Color.White);
         }
     }
 

@@ -10,7 +10,7 @@ class Program {
 
         // Check if there are not arguments (True = run GUI / False = parse arguments)
         if (args.Length == 0) {
-
+            // Renderer rendererGUI = new Renderer();
         }
         else {
 
@@ -44,12 +44,6 @@ class Program {
                 throw new InvalidOperationException("The level must have at least one box and one target");
             }
 
-            List<Node> solutionPath = SearchAlgorithm(level, state, param.Depth, param.Strategy);
-
-            // foreach (var nodeSolution in solutionPath) {
-            //     nodeSolution.PrintNode();
-            // }
-
             HashSet<string> validStrategies = new HashSet<string> { "BFS", "DFS", "UC", "GREEDY", "A*" };
 
             if (!validStrategies.Contains(param.Strategy)) {
@@ -81,10 +75,10 @@ class Program {
                 }
             }
 
-            ProblemDomain(level, state);
-
-            Renderer renderer = new Renderer(level, state);
-            renderer.Render();
+            // ProblemDomain(level, state);
+            List<Node> solutionPath = SearchAlgorithm(level, state, param.Depth, param.Strategy);
+            Renderer rendererCLI = new Renderer(level, state);
+            rendererCLI.Render(solutionPath);
         }
     } // End Main
 
