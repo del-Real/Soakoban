@@ -59,21 +59,22 @@ public class Renderer {
         targetTexture = Raylib.LoadTexture("resources/target.png");   // load target texture
     }
 
-
     // Manages the game loop, including drawing the game elements on the screen and handling window events
     public void Render(List<Node> nodeSolution) {
         Initialize();
 
-        float duration = 0.6f;    // Duration for each movement
+        float duration = 0.3f;    // Duration for each movement
         float timeElapsed = 0.0f; // Tracks time for interpolation
 
         // Player movement
-        (int, int) startPlayerPos = (0, 0);
-        (int, int) endPlayerPos = (0, 0);
-        (int, int) playerMove = (0, 0);
+        (float, float) startPlayerPos = (0f, 0f);
+        (float, float) endPlayerPos = (0f, 0f);
+        (float, float) playerMove = (0f, 0f);
 
-        // Box movement
-
+        // Boxes movement
+        (float, float) startBoxPos = (0f, 0f);
+        (float, float) endBoxrPos = (0f, 0f);
+        (float, float) boxMove = (0f, 0f);
 
         int currentNodeIndex = 0;
 
@@ -81,15 +82,17 @@ public class Renderer {
         while (!Raylib.WindowShouldClose()) {
             float dt = Raylib.GetFrameTime(); // Delta time
 
-            // Process movement if there are nodes left
+            // Lerp
             if (currentNodeIndex < nodeSolution.Count - 1) {
                 // Set start and end positions for the current node transition
-                startPlayerPos = nodeSolution[currentNodeIndex].StateNode.Player;
-                endPlayerPos = nodeSolution[currentNodeIndex + 1].StateNode.Player;
+                startPlayerPos = (nodeSolution[currentNodeIndex].StateNode.Player.Item1,
+                                  nodeSolution[currentNodeIndex].StateNode.Player.Item2);
+                endPlayerPos = (nodeSolution[currentNodeIndex + 1].StateNode.Player.Item1,
+                                nodeSolution[currentNodeIndex + 1].StateNode.Player.Item2);
 
                 // Update interpolation progress
                 if (timeElapsed < duration) {
-                    float t = timeElapsed / duration; // Normalized time
+                    float t = timeElapsed / duration; // Normalized time (0 to 1)
                     playerMove = Lerp(startPlayerPos, endPlayerPos, t);
                     timeElapsed += dt;
                 }
@@ -106,7 +109,7 @@ public class Renderer {
             Raylib.ClearBackground(Color.Black);
 
             DrawGrid();
-            DrawPlayer(playerMove); // Draw the interpolated player position
+            DrawPlayer(playerMove);
             DrawBoxes();
             DrawTargets();
             DrawWalls();
@@ -118,9 +121,9 @@ public class Renderer {
     }
 
     // Lerp from start to end
-    private static (int, int) Lerp((int, int) startPos, (int, int) endPos, float amount) {
-        int x = (int)(startPos.Item1 + (endPos.Item1 - startPos.Item1) * amount);
-        int y = (int)(startPos.Item2 + (endPos.Item2 - startPos.Item2) * amount);
+    private static (float, float) Lerp((float, float) startPos, (float, float) endPos, float amount) {
+        float x = startPos.Item1 + (endPos.Item1 - startPos.Item1) * amount;
+        float y = startPos.Item2 + (endPos.Item2 - startPos.Item2) * amount;
         return (x, y);
     }
 
@@ -161,10 +164,13 @@ public class Renderer {
     }
 
     // Draws the player on the game board based on the player's current position
-    private void DrawPlayer((int, int) playerCoords) {
+    private void DrawPlayer((float, float) playerCoords) {
+        // Calculate pixel positions using TILE_SIZE and offset
+        int x = (int)(playerCoords.Item2 * TILE_SIZE + offset); // Convert to pixel X
+        int y = (int)(playerCoords.Item1 * TILE_SIZE + offset); // Convert to pixel Y
 
-        Raylib.DrawTexture(playerTexture, playerCoords.Item2 * TILE_SIZE + offset, playerCoords.Item1 * TILE_SIZE + offset, Color.White);
-
+        // Draw the player texture at the calculated position
+        Raylib.DrawTexture(playerTexture, x, y, Color.White);
     }
 
     // Draws the boxes on the game board based on their current positions
