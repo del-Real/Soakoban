@@ -156,10 +156,10 @@ class Program {
                                 newBoxes[j][0] += directions[i].Item1;
                                 newBoxes[j][1] += directions[i].Item2;
 
-                                // Sort coordinates
+                                // Sort coordinates (disabled as it was causing rendering issues)
                                 sucState.Boxes = newBoxes
-                                        .OrderBy(box => box[0])
-                                        .ThenBy(box => box[1])
+                                        // .OrderBy(box => box[0])
+                                        // .ThenBy(box => box[1])
                                         .Select(box => (int[])box.Clone()) // Deep copy each box
                                         .ToArray();
 

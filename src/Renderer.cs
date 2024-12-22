@@ -73,9 +73,9 @@ public class Renderer {
         (float, float) playerMove = (0f, 0f);
 
         // Boxes movement
-        (float, float) startBoxesPos = (0f, 0f);
-        (float, float) endBoxesPos = (0f, 0f);
-        (float, float) boxMove = (0f, 0f);
+        float[][] startBoxesPos = new float[0][];
+        float[][] endBoxesPos = new float[0][];
+        float[][] boxMoves = new float[0][];
 
         int currentNodeIndex = 0;
 
@@ -92,13 +92,19 @@ public class Renderer {
                 endPlayerPos = (nodeSolution[currentNodeIndex + 1].StateNode.Player.Item1,
                                 nodeSolution[currentNodeIndex + 1].StateNode.Player.Item2);
 
-                startBoxesPos = nodeSolution[currentNodeIndex].StateNode.Boxes;
-                endBoxesPos = nodeSolution[currentNodeIndex + 1].StateNode.Boxes;
+                startBoxesPos = nodeSolution[currentNodeIndex].StateNode.Boxes
+                    .Select(row => row.Select(col => (float)col).ToArray())
+                    .ToArray();
+
+                endBoxesPos = nodeSolution[currentNodeIndex + 1].StateNode.Boxes
+                    .Select(row => row.Select(col => (float)col).ToArray())
+                    .ToArray();
 
                 // Update interpolation progress
                 if (timeElapsed < duration) {
                     float t = timeElapsed / duration; // Normalized time (0 to 1)
                     playerMove = Lerp(startPlayerPos, endPlayerPos, t);
+                    boxMoves = Lerp2(startBoxesPos, endBoxesPos, t);
                     timeElapsed += dt;
                 }
                 else {
@@ -107,8 +113,6 @@ public class Renderer {
                     timeElapsed = 0.0f; // Reset elapsed time for the next transition
                     currentNodeIndex++;
                 }
-
-
             }
 
             // Drawing
@@ -117,7 +121,7 @@ public class Renderer {
 
             DrawGrid();
             DrawPlayer(playerMove);
-            DrawBoxes();
+            DrawBoxes(boxMoves);
             DrawTargets();
             DrawWalls();
 
@@ -133,6 +137,21 @@ public class Renderer {
         float y = startPos.Item2 + (endPos.Item2 - startPos.Item2) * amount;
         return (x, y);
     }
+
+    private static float[][] Lerp2(float[][] startPos, float[][] endPos, float amount) {
+        // Initialize a new float array for the interpolated positions
+        float[][] boxMoves = new float[startPos.Length][];
+
+        for (int i = 0; i < startPos.Length; i++) {
+            boxMoves[i] = new float[2]; // Each box position is a 2-element array (x, y)
+
+            boxMoves[i][0] = startPos[i][0] + (endPos[i][0] - startPos[i][0]) * amount; // Interpolating x
+            boxMoves[i][1] = startPos[i][1] + (endPos[i][1] - startPos[i][1]) * amount; // Interpolating y
+        }
+
+        return boxMoves;
+    }
+
 
     static void PrintCoordsArray(int[][] array) {
         Console.Write("[");
@@ -186,22 +205,22 @@ public class Renderer {
 
     // Draws the player on the game board based on the player's current position
     private void DrawPlayer((float, float) playerCoords) {
-        // Calculate pixel positions using TILE_SIZE and offset
-        int x = (int)(playerCoords.Item2 * TILE_SIZE + offset); // Convert to pixel X
-        int y = (int)(playerCoords.Item1 * TILE_SIZE + offset); // Convert to pixel Y
+        int x = (int)(playerCoords.Item2 * TILE_SIZE + offset);
+        int y = (int)(playerCoords.Item1 * TILE_SIZE + offset);
 
         // Draw the player texture at the calculated position
         Raylib.DrawTexture(playerTexture, x, y, Color.White);
     }
 
     // Draws the boxes on the game board based on their current positions
-    private void DrawBoxes() {
-        foreach (var box in state.Boxes) {
-            int x = box[1];
-            int y = box[0];
-            Raylib.DrawTexture(boxTexture, x * TILE_SIZE + offset, y * TILE_SIZE + offset, Color.White);
+    private void DrawBoxes(float[][] boxesCoords) {
+        for (int i = 0; i < boxesCoords.Length; i++) {
+            int x = (int)(boxesCoords[i][1] * TILE_SIZE + offset); // Y-axis in grid space
+            int y = (int)(boxesCoords[i][0] * TILE_SIZE + offset); // X-axis in grid space
+            Raylib.DrawTexture(boxTexture, x, y, Color.White);
         }
     }
+
 
     // Draws the target locations on the game board at the specified positions.
     private void DrawTargets() {
