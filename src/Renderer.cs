@@ -7,18 +7,27 @@ namespace Sokoban;
 
 public class Renderer {
 
-    private const int TILE_SIZE = 30;
+    private const int TILE_SIZE = 24;
     private int screenWidth;
     private int screenHeight;
     private int offset;
 
-    private Texture2D playerTexture;
-    private Texture2D wallTexture;
-    private Texture2D boxTexture;
+    private Color bgColor = new Color(249, 219, 197, 255);
+
+    private Texture2D playerIdleTexture;
+    private Texture2D playerUpTexture;
+    private Texture2D playerRightTexture;
+    private Texture2D playerDownTexture;
+    private Texture2D playerLeftTexture;
+
     private Texture2D targetTexture;
+    private Texture2D boxTexture;
+    private Texture2D wallTexture;
 
     private Level level;
     private State state;
+
+    private Camera2D camera;
 
     /*
 
@@ -42,9 +51,16 @@ public class Renderer {
         int cols = level.Cols;
         int rows = level.Rows;
 
-        screenWidth = (TILE_SIZE * cols) + (TILE_SIZE * 4);     // screen width set by tile size
-        screenHeight = (TILE_SIZE * rows) + (TILE_SIZE * 4);    // screen height set by tile size
-        offset = TILE_SIZE * 2;                                 // offset to add margins
+        screenWidth = (TILE_SIZE * cols) + (TILE_SIZE * 16);     // screen width set by tile size
+        screenHeight = (TILE_SIZE * rows) + (TILE_SIZE * 16);    // screen height set by tile size
+        offset = TILE_SIZE * 8;                                 // offset to add margins
+
+        camera = new Camera2D {
+            Target = new Vector2(screenWidth / 2, screenHeight / 2),    // camera target (center of the screen)
+            Offset = new Vector2(screenWidth / 2, screenHeight / 2),    // camera offset (center of the screen)
+            Rotation = 0.0f,                                            // no rotation
+            Zoom = 2.0f,                                                // initial zoom
+        };
     }
 
     // Initializes the game window, sets up the frame rate, and loads the necessary textures for the game elements
@@ -54,10 +70,16 @@ public class Renderer {
         Raylib.InitWindow(screenWidth, screenHeight, "Suckabunch");  // window initilizer
         Raylib.SetTargetFPS(60);                                     // set frame rate
 
-        playerTexture = Raylib.LoadTexture("resources/player.png");   // load player texture
-        wallTexture = Raylib.LoadTexture("resources/wall.png");       // load wall texture
-        boxTexture = Raylib.LoadTexture("resources/box.png");         // load box texture
+        // load player textures
+        playerIdleTexture = Raylib.LoadTexture("resources/wh_worker_idle.png");
+        playerUpTexture = Raylib.LoadTexture("resources/wh_worker_up_anim.png");
+        playerRightTexture = Raylib.LoadTexture("resources/wh_worker_right_anim.png");
+        playerDownTexture = Raylib.LoadTexture("resources/wh_worker_down_anim.png");
+        playerLeftTexture = Raylib.LoadTexture("resources/wh_worker_left_anim.png");
+
         targetTexture = Raylib.LoadTexture("resources/target.png");   // load target texture
+        boxTexture = Raylib.LoadTexture("resources/box.png");         // load box texture
+        wallTexture = Raylib.LoadTexture("resources/wall.png");       // load wall texture
     }
 
     // Manages the game loop, including drawing the game elements on the screen and handling window events
@@ -71,6 +93,7 @@ public class Renderer {
         (float, float) startPlayerPos = (0f, 0f);
         (float, float) endPlayerPos = (0f, 0f);
         (float, float) playerMove = (0f, 0f);
+        string playerAction;
 
         // Boxes movement
         float[][] startBoxesPos = new float[0][];
@@ -103,26 +126,36 @@ public class Renderer {
                 // Update interpolation progress
                 if (timeElapsed < duration) {
                     float t = timeElapsed / duration; // Normalized time (0 to 1)
-                    playerMove = Lerp(startPlayerPos, endPlayerPos, t);
-                    boxMoves = Lerp2(startBoxesPos, endBoxesPos, t);
+                    playerMove = LerpPlayer(startPlayerPos, endPlayerPos, t);
+                    boxMoves = LerpBoxes(startBoxesPos, endBoxesPos, t);
                     timeElapsed += dt;
                 }
                 else {
                     // Move to the next node
                     playerMove = endPlayerPos;
-                    timeElapsed = 0.0f; // Reset elapsed time for the next transition
+                    timeElapsed = 0.0f; // reset elapsed time for the next transition
                     currentNodeIndex++;
                 }
             }
 
             // Drawing
             Raylib.BeginDrawing();
-            Raylib.ClearBackground(Color.Black);
+            Raylib.ClearBackground(bgColor);
+
+            Raylib.BeginMode2D(camera);
 
             DrawGrid();
-            DrawPlayer(playerMove);
-            DrawBoxes(boxMoves);
             DrawTargets();
+            DrawBoxes(boxMoves);
+
+            if (currentNodeIndex + 1 < nodeSolution.Count) {
+                playerAction = nodeSolution[currentNodeIndex + 1]?.Action;
+            }
+            else {
+                playerAction = "d";
+            }
+
+            DrawPlayer(playerMove, playerAction);
             DrawWalls();
 
             Raylib.EndDrawing();
@@ -132,13 +165,13 @@ public class Renderer {
     }
 
     // Lerp from start to end
-    private static (float, float) Lerp((float, float) startPos, (float, float) endPos, float amount) {
+    private static (float, float) LerpPlayer((float, float) startPos, (float, float) endPos, float amount) {
         float x = startPos.Item1 + (endPos.Item1 - startPos.Item1) * amount;
         float y = startPos.Item2 + (endPos.Item2 - startPos.Item2) * amount;
         return (x, y);
     }
 
-    private static float[][] Lerp2(float[][] startPos, float[][] endPos, float amount) {
+    private static float[][] LerpBoxes(float[][] startPos, float[][] endPos, float amount) {
         // Initialize a new float array for the interpolated positions
         float[][] boxMoves = new float[startPos.Length][];
 
@@ -203,13 +236,23 @@ public class Renderer {
         }
     }
 
-    // Draws the player on the game board based on the player's current position
-    private void DrawPlayer((float, float) playerCoords) {
-        int x = (int)(playerCoords.Item2 * TILE_SIZE + offset);
-        int y = (int)(playerCoords.Item1 * TILE_SIZE + offset);
 
-        // Draw the player texture at the calculated position
-        Raylib.DrawTexture(playerTexture, x, y, Color.White);
+    // Draws the walls of the game board at the specified positions
+    private void DrawWalls() {
+        foreach (var wall in level.Walls) {
+            int x = wall[1];
+            int y = wall[0];
+            Raylib.DrawTexture(wallTexture, x * TILE_SIZE + offset, y * TILE_SIZE + offset, Color.White);
+        }
+    }
+
+    // Draws the target locations on the game board at the specified positions.
+    private void DrawTargets() {
+        foreach (var target in level.Targets) {
+            int x = target[1];
+            int y = target[0];
+            Raylib.DrawTexture(targetTexture, x * TILE_SIZE + offset, y * TILE_SIZE + offset, Color.White);
+        }
     }
 
     // Draws the boxes on the game board based on their current positions
@@ -221,32 +264,55 @@ public class Renderer {
         }
     }
 
+    // Draws the player on the game board based on the player's current position
+    private void DrawPlayer((float, float) playerCoords, string action) {
+        int x = (int)(playerCoords.Item2 * TILE_SIZE + offset);
+        int y = (int)(playerCoords.Item1 * TILE_SIZE + offset);
 
-    // Draws the target locations on the game board at the specified positions.
-    private void DrawTargets() {
-        foreach (var target in level.Targets) {
-            int x = target[1];
-            int y = target[0];
-            Raylib.DrawTexture(targetTexture, x * TILE_SIZE + offset, y * TILE_SIZE + offset, Color.White);
-        }
-    }
 
-    // Draws the walls of the game board at the specified positions
-    private void DrawWalls() {
-        foreach (var wall in level.Walls) {
-            int x = wall[1];
-            int y = wall[0];
-            Raylib.DrawTexture(wallTexture, x * TILE_SIZE + offset, y * TILE_SIZE + offset, Color.White);
+        Rectangle frameRec = { };
+
+        Rectangle re = new Rectangle(0.0f, 0.0f, (float)playerUpTexture.width / 6, (float)playerUpTexture.height);
+
+
+
+        if (action == "U" || action == "u") {
+
+            // Draw the player texture at the calculated position
+            Raylib.DrawTexture(playerUpTexture, x, y, Color.White);
         }
+
+        if (action == "R" || action == "r") {
+
+            // Draw the player texture at the calculated position
+            Raylib.DrawTexture(playerRightTexture, x, y, Color.White);
+        }
+
+        if (action == "D" || action == "d") {
+
+            // Draw the player texture at the calculated position
+            Raylib.DrawTexture(playerDownTexture, x, y, Color.White);
+        }
+
+        if (action == "L" || action == "l") {
+
+            // Draw the player texture at the calculated position
+            Raylib.DrawTexture(playerLeftTexture, x, y, Color.White);
+        }
+
     }
 
     // Releases resources by unloading textures and closing the game window.
     private void Cleanup() {
         // Unload textures and close window
-        Raylib.UnloadTexture(playerTexture);
+
         Raylib.UnloadTexture(wallTexture);
-        Raylib.UnloadTexture(boxTexture);
         Raylib.UnloadTexture(targetTexture);
+        Raylib.UnloadTexture(boxTexture);
+        Raylib.UnloadTexture(playerUpTexture);
+        Raylib.UnloadTexture(playerRightTexture);
+        Raylib.UnloadTexture(playerDownTexture);
+        Raylib.UnloadTexture(playerLeftTexture);
         Raylib.CloseWindow();
     }
 }
