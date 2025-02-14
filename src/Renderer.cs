@@ -12,7 +12,7 @@ public class Renderer {
     private int screenHeight;
     private int offset;
 
-    private Color bgColor = new Color(249, 219, 197, 255);
+    private Color bgColor = new Color(214, 174, 130, 255);
 
     private Texture2D playerIdleTexture;
     private Texture2D playerUpTexture;
@@ -89,6 +89,12 @@ public class Renderer {
         float duration = 0.3f;    // Duration for each movement
         float timeElapsed = 0.0f; // Tracks time for interpolation
 
+        int currentFrame = 0;
+        int framesCounter = 0;
+        int framesSpeed = 8;
+
+        int currentNodeIndex = 0;
+
         // Player movement
         (float, float) startPlayerPos = (0f, 0f);
         (float, float) endPlayerPos = (0f, 0f);
@@ -100,7 +106,7 @@ public class Renderer {
         float[][] endBoxesPos = new float[0][];
         float[][] boxMoves = new float[0][];
 
-        int currentNodeIndex = 0;
+        Raylib.SetTargetFPS(60);
 
         // Render loop
         while (!Raylib.WindowShouldClose()) {
@@ -138,6 +144,22 @@ public class Renderer {
                 }
             }
 
+            // Player animation
+            framesCounter++;
+            if (framesCounter >= (60 / framesSpeed))    // Controls animation speed
+            {
+                framesCounter = 0;                      // Reset counter
+                currentFrame = (currentFrame + 1) % 2;  // Toggle between 0 and 1
+            }
+
+            Rectangle frameRec = new Rectangle(
+                currentFrame * ((float)playerUpTexture.Width / 2),  // Frame X position
+                0.0f,                                               // Frame Y position
+                (float)playerUpTexture.Width / 2,                   // Frame width
+                (float)playerUpTexture.Height                       // Frame height
+            );
+
+
             // Drawing
             Raylib.BeginDrawing();
             Raylib.ClearBackground(bgColor);
@@ -152,10 +174,10 @@ public class Renderer {
                 playerAction = nodeSolution[currentNodeIndex + 1]?.Action;
             }
             else {
-                playerAction = "d";
+                playerAction = "idle";
             }
 
-            DrawPlayer(playerMove, playerAction);
+            DrawPlayer(playerMove, playerAction, frameRec);
             DrawWalls();
 
             Raylib.EndDrawing();
@@ -223,7 +245,7 @@ public class Renderer {
     // Draws a grid on the screen to represent the game board, using a specified color
     private void DrawGrid() {
 
-        Color lightWhite = new Color(255, 255, 255, 32);
+        Color lightWhite = new Color(0, 0, 0, 30);
 
         // Draw vertical grid lines
         for (int i = 0; i < screenWidth / TILE_SIZE + 1; i++) {
@@ -265,39 +287,50 @@ public class Renderer {
     }
 
     // Draws the player on the game board based on the player's current position
-    private void DrawPlayer((float, float) playerCoords, string action) {
+    private void DrawPlayer((float, float) playerCoords, string action, Rectangle frameRec) {
         int x = (int)(playerCoords.Item2 * TILE_SIZE + offset);
         int y = (int)(playerCoords.Item1 * TILE_SIZE + offset);
 
+        Vector2 playerPos = new Vector2(x, y);
 
-        Rectangle frameRec = { };
-
-        Rectangle re = new Rectangle(0.0f, 0.0f, (float)playerUpTexture.width / 6, (float)playerUpTexture.height);
-
-
-
-        if (action == "U" || action == "u") {
-
-            // Draw the player texture at the calculated position
-            Raylib.DrawTexture(playerUpTexture, x, y, Color.White);
+        if (action == "U") {
+            playerPos.Y -= 5;
+            Raylib.DrawTextureRec(playerUpTexture, frameRec, playerPos, Color.White);
         }
 
-        if (action == "R" || action == "r") {
-
-            // Draw the player texture at the calculated position
-            Raylib.DrawTexture(playerRightTexture, x, y, Color.White);
+        if (action == "u") {
+            Raylib.DrawTextureRec(playerUpTexture, frameRec, playerPos, Color.White);
         }
 
-        if (action == "D" || action == "d") {
-
-            // Draw the player texture at the calculated position
-            Raylib.DrawTexture(playerDownTexture, x, y, Color.White);
+        if (action == "R") {
+            playerPos.X += 5;
+            Raylib.DrawTextureRec(playerRightTexture, frameRec, playerPos, Color.White);
         }
 
-        if (action == "L" || action == "l") {
+        if (action == "r") {
+            Raylib.DrawTextureRec(playerRightTexture, frameRec, playerPos, Color.White);
+        }
 
-            // Draw the player texture at the calculated position
-            Raylib.DrawTexture(playerLeftTexture, x, y, Color.White);
+        if (action == "D") {
+            playerPos.Y += 5;
+            Raylib.DrawTextureRec(playerDownTexture, frameRec, playerPos, Color.White);
+        }
+
+        if (action == "d") {
+            Raylib.DrawTextureRec(playerDownTexture, frameRec, playerPos, Color.White);
+        }
+
+        if (action == "L") {
+            playerPos.X -= 5;
+            Raylib.DrawTextureRec(playerLeftTexture, frameRec, playerPos, Color.White);
+        }
+
+        if (action == "l") {
+            Raylib.DrawTextureRec(playerLeftTexture, frameRec, playerPos, Color.White);
+        }
+
+        if (action == "idle") {
+            Raylib.DrawTexture(playerIdleTexture, x, y, Color.White);
         }
 
     }
@@ -305,7 +338,6 @@ public class Renderer {
     // Releases resources by unloading textures and closing the game window.
     private void Cleanup() {
         // Unload textures and close window
-
         Raylib.UnloadTexture(wallTexture);
         Raylib.UnloadTexture(targetTexture);
         Raylib.UnloadTexture(boxTexture);
@@ -313,6 +345,7 @@ public class Renderer {
         Raylib.UnloadTexture(playerRightTexture);
         Raylib.UnloadTexture(playerDownTexture);
         Raylib.UnloadTexture(playerLeftTexture);
+        Raylib.UnloadTexture(playerIdleTexture);
         Raylib.CloseWindow();
     }
 }

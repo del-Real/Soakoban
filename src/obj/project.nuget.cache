@@ -1,11 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "K5FYiUgQFdY=",
+  "dgSpecHash": "l0EMSrikUjg=",
   "success": true,
   "projectFilePath": "/Users/redsantar/Main/Suckabunch/src/sokoban.csproj",
   "expectedPackageFiles": [
-    "/Users/redsantar/.nuget/packages/raylib-cs/6.1.1/raylib-cs.6.1.1.nupkg.sha512",
-    "/Users/redsantar/.nuget/packages/system.numerics.vectors/4.5.0/system.numerics.vectors.4.5.0.nupkg.sha512"
+    "/Users/redsantar/.nuget/packages/raylib-cs/7.0.1/raylib-cs.7.0.1.nupkg.sha512"
   ],
   "logs": []
 }
