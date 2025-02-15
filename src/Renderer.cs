@@ -12,8 +12,6 @@ public class Renderer {
     private int screenHeight;
     private int offset;
 
-    private Color bgColor = new Color(214, 174, 130, 255);
-
     private Texture2D floorTexture;
     private Texture2D targetTexture;
     private Texture2D boxTexture;
@@ -24,6 +22,11 @@ public class Renderer {
     private Texture2D playerRightTexture;
     private Texture2D playerDownTexture;
     private Texture2D playerLeftTexture;
+
+    private Texture2D playerPushUpTexture;
+    private Texture2D playerPushRightTexture;
+    private Texture2D playerPushDownTexture;
+    private Texture2D playerPushLeftTexture;
 
     private Level level;
     private State state;
@@ -76,10 +79,15 @@ public class Renderer {
 
         // load player textures
         playerIdleTexture = Raylib.LoadTexture("resources/wh_worker_idle.png");
-        playerUpTexture = Raylib.LoadTexture("resources/wh_worker_up_anim.png");
-        playerRightTexture = Raylib.LoadTexture("resources/wh_worker_right_anim.png");
-        playerDownTexture = Raylib.LoadTexture("resources/wh_worker_down_anim.png");
-        playerLeftTexture = Raylib.LoadTexture("resources/wh_worker_left_anim.png");
+        playerUpTexture = Raylib.LoadTexture("resources/wh_worker_up.png");
+        playerRightTexture = Raylib.LoadTexture("resources/wh_worker_right.png");
+        playerDownTexture = Raylib.LoadTexture("resources/wh_worker_down.png");
+        playerLeftTexture = Raylib.LoadTexture("resources/wh_worker_left.png");
+
+        playerPushUpTexture = Raylib.LoadTexture("resources/wh_worker_up_push.png");
+        playerPushRightTexture = Raylib.LoadTexture("resources/wh_worker_right_push.png");
+        playerPushDownTexture = Raylib.LoadTexture("resources/wh_worker_down_push.png");
+        playerPushLeftTexture = Raylib.LoadTexture("resources/wh_worker_left_push.png");
     }
 
     // Manages the game loop, including drawing the game elements on the screen and handling window events
@@ -161,12 +169,12 @@ public class Renderer {
 
             // Drawing
             Raylib.BeginDrawing();
-            Raylib.ClearBackground(bgColor);
+            Raylib.ClearBackground(Color.White);
 
             Raylib.BeginMode2D(camera);
 
-            DrawGrid();
             DrawFloor();
+            //DrawGrid();
             DrawTargets();
             DrawBoxes(boxMoves);
 
@@ -236,7 +244,7 @@ public class Renderer {
         }
     }
 
-    // Draws a grid on the screen to represent the game board, using a specified color
+    // Draws a grid (Debug)
     private void DrawGrid() {
 
         Color lightWhite = new Color(0, 0, 0, 30);
@@ -309,19 +317,19 @@ public class Renderer {
         switch (action) {
             case "U":
                 playerPos.Y -= 5;
-                Raylib.DrawTextureRec(playerUpTexture, playerFrame, playerPos, Color.White);
+                Raylib.DrawTextureRec(playerPushUpTexture, playerFrame, playerPos, Color.White);
                 break;
             case "R":
-                playerPos.X += 8;
-                Raylib.DrawTextureRec(playerRightTexture, playerFrame, playerPos, Color.White);
+                playerPos.X += 12;
+                Raylib.DrawTextureRec(playerPushRightTexture, playerFrame, playerPos, Color.White);
                 break;
             case "D":
                 playerPos.Y += 5;
-                Raylib.DrawTextureRec(playerDownTexture, playerFrame, playerPos, Color.White);
+                Raylib.DrawTextureRec(playerPushDownTexture, playerFrame, playerPos, Color.White);
                 break;
             case "L":
-                playerPos.X -= 8;
-                Raylib.DrawTextureRec(playerLeftTexture, playerFrame, playerPos, Color.White);
+                playerPos.X -= 12;
+                Raylib.DrawTextureRec(playerPushLeftTexture, playerFrame, playerPos, Color.White);
                 break;
             case "u":
                 Raylib.DrawTextureRec(playerUpTexture, playerFrame, playerPos, Color.White);
@@ -353,6 +361,10 @@ public class Renderer {
         Raylib.UnloadTexture(playerDownTexture);
         Raylib.UnloadTexture(playerLeftTexture);
         Raylib.UnloadTexture(playerIdleTexture);
+        Raylib.UnloadTexture(playerPushUpTexture);
+        Raylib.UnloadTexture(playerPushRightTexture);
+        Raylib.UnloadTexture(playerPushDownTexture);
+        Raylib.UnloadTexture(playerPushLeftTexture);
         Raylib.CloseWindow();
     }
 
