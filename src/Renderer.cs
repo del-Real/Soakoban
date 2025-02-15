@@ -14,15 +14,16 @@ public class Renderer {
 
     private Color bgColor = new Color(214, 174, 130, 255);
 
+    private Texture2D floorTexture;
+    private Texture2D targetTexture;
+    private Texture2D boxTexture;
+    private Texture2D wallTexture;
+
     private Texture2D playerIdleTexture;
     private Texture2D playerUpTexture;
     private Texture2D playerRightTexture;
     private Texture2D playerDownTexture;
     private Texture2D playerLeftTexture;
-
-    private Texture2D targetTexture;
-    private Texture2D boxTexture;
-    private Texture2D wallTexture;
 
     private Level level;
     private State state;
@@ -30,7 +31,6 @@ public class Renderer {
     private Camera2D camera;
 
     /*
-
         // Renderer constructor
         public Renderer() {
             screenWidth = 1280;     // screen width set by tile size
@@ -39,7 +39,6 @@ public class Renderer {
 
             LaunchMenu();
         }
-
     */
 
     // Renderer constructor
@@ -70,28 +69,29 @@ public class Renderer {
         Raylib.InitWindow(screenWidth, screenHeight, "Suckabunch");  // window initilizer
         Raylib.SetTargetFPS(60);                                     // set frame rate
 
+        floorTexture = Raylib.LoadTexture("resources/floor.png");     // load floor texture
+        targetTexture = Raylib.LoadTexture("resources/target.png");   // load target texture
+        boxTexture = Raylib.LoadTexture("resources/box.png");         // load box texture
+        wallTexture = Raylib.LoadTexture("resources/wall.png");       // load wall texture
+
         // load player textures
         playerIdleTexture = Raylib.LoadTexture("resources/wh_worker_idle.png");
         playerUpTexture = Raylib.LoadTexture("resources/wh_worker_up_anim.png");
         playerRightTexture = Raylib.LoadTexture("resources/wh_worker_right_anim.png");
         playerDownTexture = Raylib.LoadTexture("resources/wh_worker_down_anim.png");
         playerLeftTexture = Raylib.LoadTexture("resources/wh_worker_left_anim.png");
-
-        targetTexture = Raylib.LoadTexture("resources/target.png");   // load target texture
-        boxTexture = Raylib.LoadTexture("resources/box.png");         // load box texture
-        wallTexture = Raylib.LoadTexture("resources/wall.png");       // load wall texture
     }
 
     // Manages the game loop, including drawing the game elements on the screen and handling window events
     public void Render(List<Node> nodeSolution) {
         Initialize();
 
-        float duration = 0.3f;    // Duration for each movement
+        float duration = 0.35f;    // Duration for each movement
         float timeElapsed = 0.0f; // Tracks time for interpolation
 
         int currentFrame = 0;
         int framesCounter = 0;
-        int framesSpeed = 8;
+        int framesSpeed = 6;
 
         int currentNodeIndex = 0;
 
@@ -137,9 +137,9 @@ public class Renderer {
                     timeElapsed += dt;
                 }
                 else {
-                    // Move to the next node
                     playerMove = endPlayerPos;
-                    timeElapsed = 0.0f; // reset elapsed time for the next transition
+                    boxMoves = endBoxesPos;
+                    timeElapsed = 0.0f;
                     currentNodeIndex++;
                 }
             }
@@ -152,13 +152,12 @@ public class Renderer {
                 currentFrame = (currentFrame + 1) % 2;  // Toggle between 0 and 1
             }
 
-            Rectangle frameRec = new Rectangle(
+            Rectangle playerFrame = new Rectangle(
                 currentFrame * ((float)playerUpTexture.Width / 2),  // Frame X position
                 0.0f,                                               // Frame Y position
                 (float)playerUpTexture.Width / 2,                   // Frame width
                 (float)playerUpTexture.Height                       // Frame height
             );
-
 
             // Drawing
             Raylib.BeginDrawing();
@@ -167,6 +166,7 @@ public class Renderer {
             Raylib.BeginMode2D(camera);
 
             DrawGrid();
+            DrawFloor();
             DrawTargets();
             DrawBoxes(boxMoves);
 
@@ -177,12 +177,11 @@ public class Renderer {
                 playerAction = "idle";
             }
 
-            DrawPlayer(playerMove, playerAction, frameRec);
+            DrawPlayer(playerMove, playerAction, playerFrame);
             DrawWalls();
 
             Raylib.EndDrawing();
         }
-
         Cleanup();
     }
 
@@ -207,21 +206,6 @@ public class Renderer {
         return boxMoves;
     }
 
-
-    static void PrintCoordsArray(int[][] array) {
-        Console.Write("[");
-
-        for (int i = 0; i < array.Length; i++) {
-            Console.Write("(" + array[i][0] + "," + array[i][1] + ")");
-
-            if (i < array.Length - 1) {
-                Console.Write(",");
-            }
-        }
-
-        Console.WriteLine("]");
-    }
-
     /*
         public void LaunchMenu() {
             Initialize();
@@ -243,6 +227,16 @@ public class Renderer {
     */
 
     // Draws a grid on the screen to represent the game board, using a specified color
+    private void DrawFloor() {
+
+        for (int i = 0; i <= screenWidth / TILE_SIZE; i++) {
+            for (int j = 0; j <= screenHeight / TILE_SIZE; j++) {
+                Raylib.DrawTexture(floorTexture, i * TILE_SIZE, j * TILE_SIZE, Color.White);
+            }
+        }
+    }
+
+    // Draws a grid on the screen to represent the game board, using a specified color
     private void DrawGrid() {
 
         Color lightWhite = new Color(0, 0, 0, 30);
@@ -258,13 +252,32 @@ public class Renderer {
         }
     }
 
+    private Dictionary<(int, int), int> wallSprites = new Dictionary<(int, int), int>();
 
-    // Draws the walls of the game board at the specified positions
     private void DrawWalls() {
+        Random random = new Random();
+
         foreach (var wall in level.Walls) {
-            int x = wall[1];
-            int y = wall[0];
-            Raylib.DrawTexture(wallTexture, x * TILE_SIZE + offset, y * TILE_SIZE + offset, Color.White);
+            int x = wall[1] * TILE_SIZE + offset;
+            int y = wall[0] * TILE_SIZE + offset;
+
+            Vector2 wallPos = new Vector2(x, y);
+
+            // Check if the wall already has a sprite assigned, if not assign one
+            if (!wallSprites.ContainsKey((x, y))) {
+                wallSprites[(x, y)] = random.Next(0, 4);
+            }
+
+            int randomFrame = wallSprites[(x, y)];
+
+            Rectangle wallFrame = new Rectangle(
+                randomFrame * (float)wallTexture.Width / 4,  // Frame X position
+                0.0f,                                        // Frame Y position
+                (float)wallTexture.Width / 4,                // Frame width
+                (float)wallTexture.Height                    // Frame height
+            );
+
+            Raylib.DrawTextureRec(wallTexture, wallFrame, wallPos, Color.White);
         }
     }
 
@@ -287,57 +300,51 @@ public class Renderer {
     }
 
     // Draws the player on the game board based on the player's current position
-    private void DrawPlayer((float, float) playerCoords, string action, Rectangle frameRec) {
+    private void DrawPlayer((float, float) playerCoords, string action, Rectangle playerFrame) {
         int x = (int)(playerCoords.Item2 * TILE_SIZE + offset);
         int y = (int)(playerCoords.Item1 * TILE_SIZE + offset);
 
         Vector2 playerPos = new Vector2(x, y);
 
-        if (action == "U") {
-            playerPos.Y -= 5;
-            Raylib.DrawTextureRec(playerUpTexture, frameRec, playerPos, Color.White);
+        switch (action) {
+            case "U":
+                playerPos.Y -= 5;
+                Raylib.DrawTextureRec(playerUpTexture, playerFrame, playerPos, Color.White);
+                break;
+            case "R":
+                playerPos.X += 8;
+                Raylib.DrawTextureRec(playerRightTexture, playerFrame, playerPos, Color.White);
+                break;
+            case "D":
+                playerPos.Y += 5;
+                Raylib.DrawTextureRec(playerDownTexture, playerFrame, playerPos, Color.White);
+                break;
+            case "L":
+                playerPos.X -= 8;
+                Raylib.DrawTextureRec(playerLeftTexture, playerFrame, playerPos, Color.White);
+                break;
+            case "u":
+                Raylib.DrawTextureRec(playerUpTexture, playerFrame, playerPos, Color.White);
+                break;
+            case "r":
+                Raylib.DrawTextureRec(playerRightTexture, playerFrame, playerPos, Color.White);
+                break;
+            case "d":
+                Raylib.DrawTextureRec(playerDownTexture, playerFrame, playerPos, Color.White);
+                break;
+            case "l":
+                Raylib.DrawTextureRec(playerLeftTexture, playerFrame, playerPos, Color.White);
+                break;
+            case "idle":
+                Raylib.DrawTexture(playerIdleTexture, x, y, Color.White);
+                break;
         }
-
-        if (action == "u") {
-            Raylib.DrawTextureRec(playerUpTexture, frameRec, playerPos, Color.White);
-        }
-
-        if (action == "R") {
-            playerPos.X += 5;
-            Raylib.DrawTextureRec(playerRightTexture, frameRec, playerPos, Color.White);
-        }
-
-        if (action == "r") {
-            Raylib.DrawTextureRec(playerRightTexture, frameRec, playerPos, Color.White);
-        }
-
-        if (action == "D") {
-            playerPos.Y += 5;
-            Raylib.DrawTextureRec(playerDownTexture, frameRec, playerPos, Color.White);
-        }
-
-        if (action == "d") {
-            Raylib.DrawTextureRec(playerDownTexture, frameRec, playerPos, Color.White);
-        }
-
-        if (action == "L") {
-            playerPos.X -= 5;
-            Raylib.DrawTextureRec(playerLeftTexture, frameRec, playerPos, Color.White);
-        }
-
-        if (action == "l") {
-            Raylib.DrawTextureRec(playerLeftTexture, frameRec, playerPos, Color.White);
-        }
-
-        if (action == "idle") {
-            Raylib.DrawTexture(playerIdleTexture, x, y, Color.White);
-        }
-
     }
 
     // Releases resources by unloading textures and closing the game window.
     private void Cleanup() {
         // Unload textures and close window
+        Raylib.UnloadTexture(floorTexture);
         Raylib.UnloadTexture(wallTexture);
         Raylib.UnloadTexture(targetTexture);
         Raylib.UnloadTexture(boxTexture);
@@ -347,5 +354,20 @@ public class Renderer {
         Raylib.UnloadTexture(playerLeftTexture);
         Raylib.UnloadTexture(playerIdleTexture);
         Raylib.CloseWindow();
+    }
+
+    // Print coords (debug)
+    static void PrintCoordsArray(int[][] array) {
+        Console.Write("[");
+
+        for (int i = 0; i < array.Length; i++) {
+            Console.Write("(" + array[i][0] + "," + array[i][1] + ")");
+
+            if (i < array.Length - 1) {
+                Console.Write(",");
+            }
+        }
+
+        Console.WriteLine("]");
     }
 }
