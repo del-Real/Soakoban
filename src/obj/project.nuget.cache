@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "l0EMSrikUjg=",
+  "dgSpecHash": "/P7Uiv5uAyo=",
   "success": true,
-  "projectFilePath": "/Users/redsantar/Main/Suckabunch/src/sokoban.csproj",
+  "projectFilePath": "/Users/redsantar/Main/Soakoban/src/sokoban.csproj",
   "expectedPackageFiles": [
     "/Users/redsantar/.nuget/packages/raylib-cs/7.0.1/raylib-cs.7.0.1.nupkg.sha512"
   ],

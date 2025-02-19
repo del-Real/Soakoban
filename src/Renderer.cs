@@ -69,7 +69,7 @@ public class Renderer {
     private void Initialize() {
 
         Raylib.SetTraceLogLevel(TraceLogLevel.None);                 // disable Raylib log info
-        Raylib.InitWindow(screenWidth, screenHeight, "Suckabunch");  // window initilizer
+        Raylib.InitWindow(screenWidth, screenHeight, "Soakoban");    // window initilizer
         Raylib.SetTargetFPS(60);                                     // set frame rate
 
         floorTexture = Raylib.LoadTexture("resources/floor.png");     // load floor texture

@@ -72,11 +72,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/redsantar/Main/Suckabunch/src/sokoban.csproj",
+      "projectUniqueName": "/Users/redsantar/Main/Soakoban/src/sokoban.csproj",
       "projectName": "sokoban",
-      "projectPath": "/Users/redsantar/Main/Suckabunch/src/sokoban.csproj",
+      "projectPath": "/Users/redsantar/Main/Soakoban/src/sokoban.csproj",
       "packagesPath": "/Users/redsantar/.nuget/packages/",
-      "outputPath": "/Users/redsantar/Main/Suckabunch/src/obj/",
+      "outputPath": "/Users/redsantar/Main/Soakoban/src/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/redsantar/.nuget/NuGet/NuGet.Config"
