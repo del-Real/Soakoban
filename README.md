@@ -13,7 +13,7 @@ Before building, ensure you have the following installed:
 - **Raylib C# bindings** – Included via [raylib-cs](https://github.com/raylib-cs/raylib-cs)
   
 
-## Build & run
+## Build
 
 ```console
 $ git clone https://github.com/del-Real/Soakoban.git
@@ -21,7 +21,7 @@ $ cd Soakoban/src
 $ dotnet build
 ```
 
-Run the program with:
+## Run
 
 ```console
 $ cd ../build/bin/net8.0
