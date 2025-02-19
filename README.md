@@ -1,3 +1,5 @@
-# Suckabunch
+# Soakoban
 
 Sokoban solver
+
+![](./demo.gif)
